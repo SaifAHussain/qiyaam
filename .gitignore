@@ -106,3 +106,4 @@ venv.bak/
 
 # Mac OS
 .DS_Store
+link_files.sh
