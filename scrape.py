@@ -60,7 +60,14 @@ for location in locations:
     for month in months:
         month_times = []
         for day in month.tbody.find_all("tr"):
-            month_times.append(decode_day(day))
+            day_number = int(day.find_all("td")[-1].string)
+            month_number = int(month.find("caption").string.split(" ")[0])
+            day_times = {
+                "month": month_number,
+                "day": day_number
+            }
+            day_times.update(decode_day(day))
+            month_times.append(day_times)
         all_times[location].append(month_times)
 
 with open("prayer_times.json", "w") as f:
