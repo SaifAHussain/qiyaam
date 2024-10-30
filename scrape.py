@@ -39,7 +39,7 @@ locations = [
     "swindon"
 ]
 
-url = "https://najaf.org/english/prayer/"
+url = ...
 
 def decode_day(table_row):
     prayer_labels = ["imsaak", "dawn", "sunrise", "noon", "sunset", "maghrib", "midnight"]
