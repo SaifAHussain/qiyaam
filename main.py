@@ -2,13 +2,73 @@ import json
 import datetime as dt
 from zoneinfo import ZoneInfo
 from fastapi import FastAPI
+from pydantic import BaseModel, conint, Field
+from typing import Literal
+
+PRAYER_LABELS = Literal["imsaak", "dawn", "sunrise", "noon", "sunset", "maghrib", "midnight"]
+
+LOCATIONS = Literal["aberystwyth",
+    "bangor-wales",
+    "birmingham",
+    "bournemouth",
+    "brighton",
+    "bristol",
+    "cambridge",
+    "cardiff",
+    "dover",
+    "dundee",
+    "edinburgh",
+    "exeter",
+    "glasgow",
+    "hull",
+    "leeds",
+    "leicester",
+    "liverpool",
+    "london",
+    "luton",
+    "manchester",
+    "middlesbrough",
+    "milton-keynes",
+    "newcastle",
+    "norwich",
+    "nottingham",
+    "oxford",
+    "peterborough",
+    "plymouth",
+    "portsmouth",
+    "sheffield",
+    "southampton",
+    "southend-on-sea",
+    "stoke-on-trent",
+    "swansea",
+    "swindon"]
 
 uk = ZoneInfo("Europe/London")
 
 with open("prayer_times.json", "r") as f:
     prayer_times = json.load(f)
 
+#Here we are setting the types and constraints on the data inputs:
+class DateModel(BaseModel):
+    month: conint(ge=1, le=12)
+    day: conint(ge=1, le=31)
+    year: conint(ge=1900, le=3000) = Field(default_factory=lambda: dt.datetime.now().year)
+
+
+
+class PrayerLabelModel(BaseModel):
+    time: PRAYER_LABELS
+
+
+class LocationModel(BaseModel):
+    location: LOCATIONS
+
+
+
+
 def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None):
+    # Structure: Dictionary with locations as keys, values being a year which is a list of lists (months) containing dictionaries (days) which contain strings (times)
+    
     if type(utc_time) == str:
         if year == None:
             year = dt.datetime.now().year
@@ -18,6 +78,8 @@ def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None)
         DST_time = dt_object.astimezone(uk)
         time_format = "%H:%M" if use_24_hour else "%I:%M %p"
         return dt.datetime.strftime(DST_time, time_format)
+
+
     if type(utc_time) == dict:
         utc_time = utc_time.copy()
         for key, value in utc_time.items():
@@ -26,6 +88,7 @@ def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None)
             utc_time[key] = adjust_for_DST(value, use_24_hour, year, utc_time["month"], utc_time["day"])
 
         return utc_time
+    # 
     if type(utc_time) == list:
         utc_time = utc_time.copy()
         for i, item in enumerate(utc_time):
@@ -93,3 +156,15 @@ def get_time(location: str, month: int, day: int, time: str, use_24_hour: bool =
     return {
         time.lower(): adjust_for_DST(prayer_times[location.lower()][month-1][day-1][time.lower()], use_24_hour, None, month, day)
     }
+
+# TODO:
+# Error catching: invalid input (location, month, day, time)
+# Location has to be from the list of valid locations
+# Prayer label needs to be from the list of valid prayer labels
+# Day needs to be 1 <= day <= 31
+# Month needs to be 1 <= month <= 12
+# Year should probably be 1900 <= year <= 3000
+# Pydantic will be used to validate these data objects...
+
+#TODO:
+# - Create date validations - a combo of the 31st of feb can't be accepted...
