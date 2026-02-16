@@ -223,6 +223,10 @@ def get_time_yesterday(location: str, time: str, use_24_hour: bool = True):
 @app.get("/{location}/calendar.ics")
 def get_calendar(location: str, days: int = CALENDAR_DAYS):
     location = validate_location(location)
+    if days < 1:
+        raise HTTPException(status_code=400, detail="Days must be at least 1")
+    if days > 365:
+        raise HTTPException(status_code=400, detail="Days cannot exceed 365")
     ics_content = generate_ics(location, days)
     return Response(content=ics_content, media_type="text/calendar")
 
