@@ -1,7 +1,7 @@
 import json
 import datetime as dt
 from zoneinfo import ZoneInfo
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, conint, Field
 from typing import Literal
 
@@ -102,6 +102,66 @@ app = FastAPI()
 
 VALID_PRAYER_LABELS = ["imsaak", "dawn", "sunrise", "noon", "sunset", "maghrib", "midnight"]
 
+# Calendar feed settings
+CALENDAR_EVENTS = [
+    ("dawn", "sunrise", "Dawn"),
+    ("noon", "sunset", "Noon"),
+    ("maghrib", "midnight", "Maghrib"),
+]
+CALENDAR_DAYS = 30
+
+def get_prayer_datetime(location: str, year: int, month: int, day: int, prayer: str) -> dt.datetime:
+    """Get a prayer time as a timezone-aware datetime in UK time."""
+    time_str = prayer_times[location][month - 1][day - 1][prayer]
+    time_obj = dt.datetime.strptime(time_str, "%H:%M")
+    return time_obj.replace(year=year, month=month, day=day, tzinfo=dt.UTC).astimezone(uk)
+
+def generate_ics(location: str, days: int = CALENDAR_DAYS) -> str:
+    """Generate an ICS calendar feed for the given location."""
+    now = dt.datetime.now(dt.UTC)
+    dtstamp = now.strftime("%Y%m%dT%H%M%SZ")
+    
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Qiyaam//Prayer Times//EN",
+        f"X-WR-CALNAME:Prayer Times - {location.title()}",
+    ]
+    
+    today = dt.datetime.now(uk)
+    
+    for i in range(days):
+        current = today + dt.timedelta(days=i)
+        year, month, day = current.year, current.month, current.day
+        
+        # Skip Feb 29 if data doesn't have it
+        if month == 2 and day == 29:
+            try:
+                _ = prayer_times[location][1][28]  # Check if Feb 29 exists
+            except IndexError:
+                continue
+        
+        for start_prayer, end_prayer, summary in CALENDAR_EVENTS:
+            start_dt = get_prayer_datetime(location, year, month, day, start_prayer)
+            end_dt = get_prayer_datetime(location, year, month, day, end_prayer)
+            
+            start_str = start_dt.strftime("%Y%m%dT%H%M%S")
+            end_str = end_dt.strftime("%Y%m%dT%H%M%S")
+            uid = f"{start_prayer}-{current.strftime('%Y-%m-%d')}@qiyaam.com"
+            
+            lines.extend([
+                "BEGIN:VEVENT",
+                f"UID:{uid}",
+                f"DTSTAMP:{dtstamp}",
+                f"DTSTART;TZID=Europe/London:{start_str}",
+                f"DTEND;TZID=Europe/London:{end_str}",
+                f"SUMMARY:{summary}",
+                "END:VEVENT",
+            ])
+    
+    lines.append("END:VCALENDAR")
+    return "\r\n".join(lines)
+
 def validate_location(location: str) -> str:
     location = location.lower()
     if location not in prayer_times:
@@ -158,6 +218,13 @@ def get_yesterday(location: str, use_24_hour: bool = True):
 def get_time_yesterday(location: str, time: str, use_24_hour: bool = True):
     yesterday = dt.datetime.now(dt.UTC).astimezone(uk) - dt.timedelta(days=1)
     return get_time(location, yesterday.month, yesterday.day, time, use_24_hour)
+
+# Calendar feed (must be before /{location}/{month} to avoid routing conflict)
+@app.get("/{location}/calendar.ics")
+def get_calendar(location: str, days: int = CALENDAR_DAYS):
+    location = validate_location(location)
+    ics_content = generate_ics(location, days)
+    return Response(content=ics_content, media_type="text/calendar")
 
 # Whole Year
 @app.get("/{location}")
