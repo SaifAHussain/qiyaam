@@ -1,6 +1,4 @@
 __pycache__/
-venv/
+.venv/
 .DS_Store
 link_files.sh
-.stfolder/
-.stignore

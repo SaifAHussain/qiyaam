@@ -1,0 +1,9 @@
+[project]
+name = "qiyaam"
+version = "0.1.0"
+description = "Prayer times API for UK cities"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]",
+    "pydantic",
+]

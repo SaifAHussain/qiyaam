@@ -1,7 +1,7 @@
 import json
 import datetime as dt
 from zoneinfo import ZoneInfo
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, conint, Field
 from typing import Literal
 
@@ -66,38 +66,62 @@ class LocationModel(BaseModel):
 
 
 
+# Use a leap year for DST calculations to handle Feb 29
+DST_REFERENCE_YEAR = 2024
+
 def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None):
     # Structure: Dictionary with locations as keys, values being a year which is a list of lists (months) containing dictionaries (days) which contain strings (times)
     
-    if type(utc_time) == str:
-        if year == None:
-            year = dt.datetime.now().year
+    if isinstance(utc_time, str):
+        if year is None:
+            year = DST_REFERENCE_YEAR
 
-        assert(month is not None and day is not None)
-        dt_object = dt.datetime.strptime(utc_time,"%H:%M").replace(year=year, month=month, day=day, tzinfo=dt.UTC)
+        assert month is not None and day is not None
+        dt_object = dt.datetime.strptime(utc_time, "%H:%M").replace(year=year, month=month, day=day, tzinfo=dt.UTC)
         DST_time = dt_object.astimezone(uk)
         time_format = "%H:%M" if use_24_hour else "%I:%M %p"
         return dt.datetime.strftime(DST_time, time_format)
 
 
-    if type(utc_time) == dict:
+    if isinstance(utc_time, dict):
         utc_time = utc_time.copy()
         for key, value in utc_time.items():
             if key in ["month", "day"]:
                 continue
             utc_time[key] = adjust_for_DST(value, use_24_hour, year, utc_time["month"], utc_time["day"])
-
         return utc_time
-    # 
-    if type(utc_time) == list:
+
+    if isinstance(utc_time, list):
         utc_time = utc_time.copy()
         for i, item in enumerate(utc_time):
             utc_time[i] = adjust_for_DST(item, use_24_hour, year)
-
         return utc_time
 
 
 app = FastAPI()
+
+VALID_PRAYER_LABELS = ["imsaak", "dawn", "sunrise", "noon", "sunset", "maghrib", "midnight"]
+
+def validate_location(location: str) -> str:
+    location = location.lower()
+    if location not in prayer_times:
+        raise HTTPException(status_code=404, detail=f"Location '{location}' not found")
+    return location
+
+def validate_month(month: int) -> None:
+    if not 1 <= month <= 12:
+        raise HTTPException(status_code=400, detail=f"Month must be between 1 and 12")
+
+def validate_day(month: int, day: int) -> None:
+    days_in_month = len(prayer_times["london"][month - 1])
+    if not 1 <= day <= days_in_month:
+        raise HTTPException(status_code=400, detail=f"Day must be between 1 and {days_in_month} for month {month}")
+
+def validate_prayer_label(time: str) -> str:
+    time = time.lower()
+    if time not in VALID_PRAYER_LABELS:
+        raise HTTPException(status_code=400, detail=f"Invalid prayer time '{time}'. Valid options: {', '.join(VALID_PRAYER_LABELS)}")
+    return time
 
 # Today
 @app.get("/{location}/today")
@@ -138,23 +162,33 @@ def get_time_yesterday(location: str, time: str, use_24_hour: bool = True):
 # Whole Year
 @app.get("/{location}")
 def get_year(location: str, use_24_hour: bool = True):
-    return adjust_for_DST(prayer_times[location.lower()], use_24_hour)
+    location = validate_location(location)
+    return adjust_for_DST(prayer_times[location], use_24_hour)
 
 # Whole Month
 @app.get("/{location}/{month}")
 def get_month(location: str, month: int, use_24_hour: bool = True):
-    return adjust_for_DST(prayer_times[location.lower()][month-1], use_24_hour)
+    location = validate_location(location)
+    validate_month(month)
+    return adjust_for_DST(prayer_times[location][month-1], use_24_hour)
 
 # Whole Day
 @app.get("/{location}/{month}/{day}")
 def get_day(location: str, month: int, day: int, use_24_hour: bool = True):
-    return adjust_for_DST(prayer_times[location.lower()][month-1][day-1], use_24_hour)
+    location = validate_location(location)
+    validate_month(month)
+    validate_day(month, day)
+    return adjust_for_DST(prayer_times[location][month-1][day-1], use_24_hour)
 
 # Specific time in day
 @app.get("/{location}/{month}/{day}/{time}")
 def get_time(location: str, month: int, day: int, time: str, use_24_hour: bool = True):
+    location = validate_location(location)
+    validate_month(month)
+    validate_day(month, day)
+    time = validate_prayer_label(time)
     return {
-        time.lower(): adjust_for_DST(prayer_times[location.lower()][month-1][day-1][time.lower()], use_24_hour, None, month, day)
+        time: adjust_for_DST(prayer_times[location][month-1][day-1][time], use_24_hour, None, month, day)
     }
 
 # TODO:
