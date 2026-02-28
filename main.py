@@ -1,7 +1,10 @@
 import json
 import datetime as dt
 from zoneinfo import ZoneInfo
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, conint, Field
 from typing import Literal
 
@@ -99,6 +102,14 @@ def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None)
 
 
 app = FastAPI()
+
+# Serve static files
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/")
+async def root():
+    return FileResponse(STATIC_DIR / "index.html")
 
 VALID_PRAYER_LABELS = ["imsaak", "dawn", "sunrise", "noon", "sunset", "maghrib", "midnight"]
 

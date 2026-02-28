@@ -1,0 +1,264 @@
+/* Reset */
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+}
+
+/* Variables */
+:root {
+    --color-bg: #0d1f14;
+    --color-bg-card: #152a1c;
+    --color-text: #e8e6e3;
+    --color-text-muted: #9ca89f;
+    --color-gold: #d4a94b;
+    --color-gold-hover: #e6be5a;
+    --color-green: #1a4d2e;
+    --color-green-light: #2d6b44;
+    --color-border: #2d3d32;
+
+    --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --max-width: 600px;
+    --spacing: 1.5rem;
+}
+
+/* Base */
+body {
+    font-family: var(--font-family);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Layout */
+header {
+    text-align: center;
+    padding: calc(var(--spacing) * 2) var(--spacing);
+    border-bottom: 1px solid var(--color-border);
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    letter-spacing: 0.05em;
+}
+
+.tagline {
+    margin: 0.5rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+}
+
+main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--spacing);
+}
+
+section {
+    margin-bottom: calc(var(--spacing) * 2);
+}
+
+h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-gold);
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* City Select */
+.city-select {
+    text-align: center;
+}
+
+.city-select label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.city-select select {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--color-bg-card);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca89f' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.city-select select:focus {
+    outline: none;
+    border-color: var(--color-gold);
+}
+
+/* Times Grid */
+.times {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.time-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.time-card .label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.time-card .value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-gold);
+}
+
+/* Subscribe */
+.subscribe {
+    text-align: center;
+}
+
+.subscribe p {
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+}
+
+.subscribe-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-google {
+    background: var(--color-green);
+    color: var(--color-text);
+    border: 1px solid var(--color-green-light);
+}
+
+.btn-google:hover {
+    background: var(--color-green-light);
+}
+
+.btn-apple {
+    background: transparent;
+    color: var(--color-gold);
+    border: 1px solid var(--color-gold);
+}
+
+.btn-apple:hover {
+    background: var(--color-gold);
+    color: var(--color-bg);
+}
+
+/* API */
+.api p {
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+}
+
+.endpoint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.endpoint code {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.9rem;
+    color: var(--color-text);
+}
+
+.endpoint .desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* Source */
+.source {
+    text-align: center;
+    padding-top: var(--spacing);
+    border-top: 1px solid var(--color-border);
+}
+
+.source p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.source a {
+    color: var(--color-gold);
+    text-decoration: none;
+}
+
+.source a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .times {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .endpoint {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}

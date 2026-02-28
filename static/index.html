@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qiyaam — UK Prayer Times</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Qiyaam</h1>
+        <p class="tagline">Prayer times for UK cities</p>
+    </header>
+
+    <main>
+        <section class="city-select">
+            <label for="city">Select your city</label>
+            <select id="city">
+                <option value="london">London</option>
+                <option value="birmingham">Birmingham</option>
+                <option value="manchester">Manchester</option>
+                <option value="glasgow">Glasgow</option>
+                <option value="liverpool">Liverpool</option>
+                <option value="leeds">Leeds</option>
+                <option value="edinburgh">Edinburgh</option>
+                <option value="bristol">Bristol</option>
+                <option value="cardiff">Cardiff</option>
+                <option value="newcastle">Newcastle</option>
+                <option value="sheffield">Sheffield</option>
+                <option value="nottingham">Nottingham</option>
+                <option value="leicester">Leicester</option>
+                <option value="cambridge">Cambridge</option>
+                <option value="oxford">Oxford</option>
+                <option value="brighton">Brighton</option>
+                <option value="plymouth">Plymouth</option>
+                <option value="southampton">Southampton</option>
+                <option value="portsmouth">Portsmouth</option>
+                <option value="bournemouth">Bournemouth</option>
+                <option value="exeter">Exeter</option>
+                <option value="norwich">Norwich</option>
+                <option value="hull">Hull</option>
+                <option value="middlesbrough">Middlesbrough</option>
+                <option value="stoke-on-trent">Stoke-on-Trent</option>
+                <option value="swansea">Swansea</option>
+                <option value="dundee">Dundee</option>
+                <option value="aberdeen">Aberdeen</option>
+                <option value="luton">Luton</option>
+                <option value="milton-keynes">Milton Keynes</option>
+                <option value="peterborough">Peterborough</option>
+                <option value="swindon">Swindon</option>
+                <option value="southend-on-sea">Southend-on-Sea</option>
+                <option value="dover">Dover</option>
+                <option value="bangor-wales">Bangor (Wales)</option>
+                <option value="aberystwyth">Aberystwyth</option>
+            </select>
+        </section>
+
+        <section class="times" id="times">
+            <div class="time-card">
+                <span class="label">Imsaak</span>
+                <span class="value" id="imsaak">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Dawn</span>
+                <span class="value" id="dawn">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Sunrise</span>
+                <span class="value" id="sunrise">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Noon</span>
+                <span class="value" id="noon">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Sunset</span>
+                <span class="value" id="sunset">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Maghrib</span>
+                <span class="value" id="maghrib">--:--</span>
+            </div>
+            <div class="time-card">
+                <span class="label">Midnight</span>
+                <span class="value" id="midnight">--:--</span>
+            </div>
+        </section>
+
+        <section class="subscribe">
+            <h2>Add to your calendar</h2>
+            <p>Subscribe to get prayer times automatically synced.</p>
+            <div class="subscribe-buttons">
+                <a id="google-cal" href="#" class="btn btn-google">Google Calendar</a>
+                <a id="apple-cal" href="#" class="btn btn-apple">Apple Calendar</a>
+            </div>
+        </section>
+
+        <section class="api">
+            <h2>API</h2>
+            <p>Access prayer times programmatically.</p>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/today</code>
+                <span class="desc">Today's times</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/tomorrow</code>
+                <span class="desc">Tomorrow's times</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/calendar.ics</code>
+                <span class="desc">Calendar feed</span>
+            </div>
+        </section>
+
+        <section class="source">
+            <p>Data sourced from <a href="https://najaf.org/english/" target="_blank">Imam Ali Foundation</a></p>
+        </section>
+    </main>
+
+    <script>
+        const city = document.getElementById('city');
+        const prayers = ['imsaak', 'dawn', 'sunrise', 'noon', 'sunset', 'maghrib', 'midnight'];
+
+        async function fetchTimes() {
+            const slug = city.value;
+            try {
+                const res = await fetch(`/${slug}/today`);
+                const data = await res.json();
+                prayers.forEach(p => {
+                    document.getElementById(p).textContent = data[p] || '--:--';
+                });
+            } catch (e) {
+                prayers.forEach(p => {
+                    document.getElementById(p).textContent = '--:--';
+                });
+            }
+            updateLinks();
+        }
+
+        function updateLinks() {
+            const slug = city.value;
+            document.getElementById('google-cal').href = 
+                `https://www.google.com/calendar/render?cid=webcal://${location.host}/${slug}/calendar.ics?days=365`;
+            document.getElementById('apple-cal').href = 
+                `webcal://${location.host}/${slug}/calendar.ics?days=365`;
+            document.querySelectorAll('.city-slug').forEach(el => {
+                el.textContent = slug;
+            });
+        }
+
+        city.addEventListener('change', fetchTimes);
+        fetchTimes();
+    </script>
+</body>
+</html>
