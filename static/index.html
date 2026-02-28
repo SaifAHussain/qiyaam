@@ -4,20 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qiyaam — UK Prayer Times</title>
-    <meta name="description" content="Shia prayer times for 35 UK cities. API, calendar feeds, and Apple Shortcut available.">
+    <meta name="description" content="Shia prayer times for 35 UK cities, according to the Imam Ali Foundation.">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Qiyaam</h1>
-        <p class="tagline">Shia prayer times for 35 UK cities</p>
-        <p class="source-note">According to the Imam Ali Foundation</p>
-    </header>
-
+    <div class="pattern-bg"></div>
+    
     <main>
+        <header>
+            <div class="ornament">✦</div>
+            <h1>Qiyaam</h1>
+            <p class="tagline">UK Prayer Times</p>
+            <div class="divider">
+                <span></span>
+                <svg class="star" viewBox="0 0 24 24" width="16" height="16">
+                    <polygon points="12,2 15,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 9,9" fill="currentColor"/>
+                </svg>
+                <span></span>
+            </div>
+        </header>
+
         <section class="city-select">
-            <label for="city">Select your city</label>
-            <select id="city">
+            <select id="city" aria-label="Select city">
                 <option value="aberystwyth">Aberystwyth</option>
                 <option value="bangor-wales">Bangor (Wales)</option>
                 <option value="birmingham">Birmingham</option>
@@ -57,118 +68,78 @@
         </section>
 
         <section class="times" id="times">
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Imsaak</span>
                 <span class="value" id="imsaak">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Dawn</span>
                 <span class="value" id="dawn">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Sunrise</span>
                 <span class="value" id="sunrise">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Noon</span>
                 <span class="value" id="noon">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Sunset</span>
                 <span class="value" id="sunset">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Maghrib</span>
                 <span class="value" id="maghrib">--:--</span>
             </div>
-            <div class="time-card">
+            <div class="time-row">
                 <span class="label">Midnight</span>
                 <span class="value" id="midnight">--:--</span>
             </div>
         </section>
 
-        <section class="shortcut">
-            <h2>iPhone Shortcut</h2>
-            <p>Get prayer times with one tap on your iPhone.</p>
-            <a href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd" class="btn btn-shortcut" target="_blank">
-                Add Shortcut
+        <section class="actions">
+            <a href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd" class="badge" target="_blank">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <div class="badge-text">
+                    <span class="badge-small">Add to</span>
+                    <span class="badge-large">iPhone Shortcuts</span>
+                </div>
             </a>
-            <p class="note">Currently configured for London. You can edit it for other cities.</p>
-        </section>
-
-        <section class="subscribe">
-            <h2>Calendar</h2>
-            <p>Subscribe to sync prayer times to your calendar automatically.</p>
-            <div class="subscribe-buttons">
-                <a id="google-cal" href="#" class="btn btn-google">Google Calendar</a>
-                <a id="apple-cal" href="#" class="btn btn-apple">Apple Calendar</a>
+            <p class="hint">London only · Edit shortcut for other cities</p>
+            
+            <div class="calendar-links">
+                <a id="apple-cal" href="#">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                    </svg>
+                    Apple Calendar
+                </a>
+                <span class="sep">·</span>
+                <a id="google-cal" href="#">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                    </svg>
+                    Google Calendar
+                </a>
             </div>
-            <p class="note">Shows Dawn→Sunrise, Noon→Sunset, and Maghrib→Midnight as events.</p>
         </section>
 
         <section class="api">
             <h2>API</h2>
-            <p>Access prayer times programmatically. All times are in 24-hour format by default.</p>
-
-            <h3>Endpoints</h3>
-
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/today</code>
-                <span class="desc">Today's times</span>
+            <div class="endpoints">
+                <code>/<span class="city-slug">london</span>/today</code>
+                <code>/<span class="city-slug">london</span>/tomorrow</code>
+                <code>/<span class="city-slug">london</span>/<em>month</em>/<em>day</em></code>
+                <code>/<span class="city-slug">london</span>/calendar.ics</code>
             </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/tomorrow</code>
-                <span class="desc">Tomorrow's times</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/yesterday</code>
-                <span class="desc">Yesterday's times</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/today/dawn</code>
-                <span class="desc">Specific prayer today</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/3/15</code>
-                <span class="desc">Specific date (month/day)</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/3/15/maghrib</code>
-                <span class="desc">Specific prayer on date</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/3</code>
-                <span class="desc">Whole month</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span></code>
-                <span class="desc">Whole year</span>
-            </div>
-            <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/calendar.ics</code>
-                <span class="desc">ICS calendar feed</span>
-            </div>
-
-            <h3>Parameters</h3>
-            <div class="param">
-                <code>?use_24_hour=false</code>
-                <span class="desc">Use 12-hour format (e.g., 05:16 AM)</span>
-            </div>
-            <div class="param">
-                <code>?days=365</code>
-                <span class="desc">Calendar feed length (1-365, default 30)</span>
-            </div>
-
-            <h3>Prayer Labels</h3>
-            <p class="labels">imsaak · dawn · sunrise · noon · sunset · maghrib · midnight</p>
-
-            <h3>Example Response</h3>
-            <pre id="example-response">Loading...</pre>
         </section>
 
-        <section class="source">
-            <p>Data sourced from <a href="https://najaf.org/english/" target="_blank">Imam Ali Foundation</a></p>
-        </section>
+        <footer>
+            <p>According to the <a href="https://najaf.org/english/" target="_blank">Imam Ali Foundation</a></p>
+        </footer>
     </main>
 
     <script>
@@ -183,7 +154,6 @@
                 prayers.forEach(p => {
                     document.getElementById(p).textContent = data[p] || '--:--';
                 });
-                document.getElementById('example-response').textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 prayers.forEach(p => {
                     document.getElementById(p).textContent = '--:--';
