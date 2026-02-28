@@ -4,54 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qiyaam — UK Prayer Times</title>
+    <meta name="description" content="Shia prayer times for 35 UK cities. API, calendar feeds, and Apple Shortcut available.">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <header>
         <h1>Qiyaam</h1>
-        <p class="tagline">Prayer times for UK cities</p>
+        <p class="tagline">Shia prayer times for 35 UK cities</p>
+        <p class="source-note">According to the Imam Ali Foundation</p>
     </header>
 
     <main>
         <section class="city-select">
             <label for="city">Select your city</label>
             <select id="city">
-                <option value="london">London</option>
+                <option value="aberystwyth">Aberystwyth</option>
+                <option value="bangor-wales">Bangor (Wales)</option>
                 <option value="birmingham">Birmingham</option>
-                <option value="manchester">Manchester</option>
-                <option value="glasgow">Glasgow</option>
-                <option value="liverpool">Liverpool</option>
-                <option value="leeds">Leeds</option>
-                <option value="edinburgh">Edinburgh</option>
-                <option value="bristol">Bristol</option>
-                <option value="cardiff">Cardiff</option>
-                <option value="newcastle">Newcastle</option>
-                <option value="sheffield">Sheffield</option>
-                <option value="nottingham">Nottingham</option>
-                <option value="leicester">Leicester</option>
-                <option value="cambridge">Cambridge</option>
-                <option value="oxford">Oxford</option>
-                <option value="brighton">Brighton</option>
-                <option value="plymouth">Plymouth</option>
-                <option value="southampton">Southampton</option>
-                <option value="portsmouth">Portsmouth</option>
                 <option value="bournemouth">Bournemouth</option>
+                <option value="brighton">Brighton</option>
+                <option value="bristol">Bristol</option>
+                <option value="cambridge">Cambridge</option>
+                <option value="cardiff">Cardiff</option>
+                <option value="dover">Dover</option>
+                <option value="dundee">Dundee</option>
+                <option value="edinburgh">Edinburgh</option>
                 <option value="exeter">Exeter</option>
-                <option value="norwich">Norwich</option>
+                <option value="glasgow">Glasgow</option>
                 <option value="hull">Hull</option>
+                <option value="leeds">Leeds</option>
+                <option value="leicester">Leicester</option>
+                <option value="liverpool">Liverpool</option>
+                <option value="london" selected>London</option>
+                <option value="luton">Luton</option>
+                <option value="manchester">Manchester</option>
                 <option value="middlesbrough">Middlesbrough</option>
+                <option value="milton-keynes">Milton Keynes</option>
+                <option value="newcastle">Newcastle</option>
+                <option value="norwich">Norwich</option>
+                <option value="nottingham">Nottingham</option>
+                <option value="oxford">Oxford</option>
+                <option value="peterborough">Peterborough</option>
+                <option value="plymouth">Plymouth</option>
+                <option value="portsmouth">Portsmouth</option>
+                <option value="sheffield">Sheffield</option>
+                <option value="southampton">Southampton</option>
+                <option value="southend-on-sea">Southend-on-Sea</option>
                 <option value="stoke-on-trent">Stoke-on-Trent</option>
                 <option value="swansea">Swansea</option>
-                <option value="dundee">Dundee</option>
-                <option value="aberdeen">Aberdeen</option>
-                <option value="luton">Luton</option>
-                <option value="milton-keynes">Milton Keynes</option>
-                <option value="peterborough">Peterborough</option>
                 <option value="swindon">Swindon</option>
-                <option value="southend-on-sea">Southend-on-Sea</option>
-                <option value="dover">Dover</option>
-                <option value="bangor-wales">Bangor (Wales)</option>
-                <option value="aberystwyth">Aberystwyth</option>
             </select>
         </section>
 
@@ -86,18 +87,31 @@
             </div>
         </section>
 
+        <section class="shortcut">
+            <h2>iPhone Shortcut</h2>
+            <p>Get prayer times with one tap on your iPhone.</p>
+            <a href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd" class="btn btn-shortcut" target="_blank">
+                Add Shortcut
+            </a>
+            <p class="note">Currently configured for London. You can edit it for other cities.</p>
+        </section>
+
         <section class="subscribe">
-            <h2>Add to your calendar</h2>
-            <p>Subscribe to get prayer times automatically synced.</p>
+            <h2>Calendar</h2>
+            <p>Subscribe to sync prayer times to your calendar automatically.</p>
             <div class="subscribe-buttons">
                 <a id="google-cal" href="#" class="btn btn-google">Google Calendar</a>
                 <a id="apple-cal" href="#" class="btn btn-apple">Apple Calendar</a>
             </div>
+            <p class="note">Shows Dawn→Sunrise, Noon→Sunset, and Maghrib→Midnight as events.</p>
         </section>
 
         <section class="api">
             <h2>API</h2>
-            <p>Access prayer times programmatically.</p>
+            <p>Access prayer times programmatically. All times are in 24-hour format by default.</p>
+
+            <h3>Endpoints</h3>
+
             <div class="endpoint">
                 <code>GET /<span class="city-slug">london</span>/today</code>
                 <span class="desc">Today's times</span>
@@ -107,9 +121,49 @@
                 <span class="desc">Tomorrow's times</span>
             </div>
             <div class="endpoint">
-                <code>GET /<span class="city-slug">london</span>/calendar.ics</code>
-                <span class="desc">Calendar feed</span>
+                <code>GET /<span class="city-slug">london</span>/yesterday</code>
+                <span class="desc">Yesterday's times</span>
             </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/today/dawn</code>
+                <span class="desc">Specific prayer today</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/3/15</code>
+                <span class="desc">Specific date (month/day)</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/3/15/maghrib</code>
+                <span class="desc">Specific prayer on date</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/3</code>
+                <span class="desc">Whole month</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span></code>
+                <span class="desc">Whole year</span>
+            </div>
+            <div class="endpoint">
+                <code>GET /<span class="city-slug">london</span>/calendar.ics</code>
+                <span class="desc">ICS calendar feed</span>
+            </div>
+
+            <h3>Parameters</h3>
+            <div class="param">
+                <code>?use_24_hour=false</code>
+                <span class="desc">Use 12-hour format (e.g., 05:16 AM)</span>
+            </div>
+            <div class="param">
+                <code>?days=365</code>
+                <span class="desc">Calendar feed length (1-365, default 30)</span>
+            </div>
+
+            <h3>Prayer Labels</h3>
+            <p class="labels">imsaak · dawn · sunrise · noon · sunset · maghrib · midnight</p>
+
+            <h3>Example Response</h3>
+            <pre id="example-response">Loading...</pre>
         </section>
 
         <section class="source">
@@ -129,6 +183,7 @@
                 prayers.forEach(p => {
                     document.getElementById(p).textContent = data[p] || '--:--';
                 });
+                document.getElementById('example-response').textContent = JSON.stringify(data, null, 2);
             } catch (e) {
                 prayers.forEach(p => {
                     document.getElementById(p).textContent = '--:--';

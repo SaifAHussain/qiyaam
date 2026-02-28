@@ -60,6 +60,13 @@ h1 {
     font-size: 1.1rem;
 }
 
+.source-note {
+    margin: 0.25rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
 main {
     max-width: var(--max-width);
     margin: 0 auto;
@@ -144,6 +151,34 @@ h2 {
     color: var(--color-gold);
 }
 
+/* Shortcut */
+.shortcut {
+    text-align: center;
+}
+
+.shortcut p {
+    color: var(--color-text-muted);
+    margin: 0 0 1rem;
+}
+
+.btn-shortcut {
+    background: linear-gradient(135deg, #ff6b9d, #c44dff, #6e8efb);
+    color: #fff;
+    border: none;
+    font-weight: 500;
+}
+
+.btn-shortcut:hover {
+    opacity: 0.9;
+}
+
+.note {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+    margin-top: 0.75rem;
+}
+
 /* Subscribe */
 .subscribe {
     text-align: center;
@@ -202,7 +237,21 @@ h2 {
     margin: 0 0 1rem;
 }
 
-.endpoint {
+.api h3 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-gold);
+    margin: 1.5rem 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+.api h3:first-of-type {
+    margin-top: 0;
+}
+
+.endpoint, .param {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -213,15 +262,33 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
-.endpoint code {
+.endpoint code, .param code {
     font-family: "SF Mono", Consolas, monospace;
     font-size: 0.9rem;
     color: var(--color-text);
 }
 
-.endpoint .desc {
+.endpoint .desc, .param .desc {
     font-size: 0.85rem;
     color: var(--color-text-muted);
+}
+
+.labels {
+    color: var(--color-text-muted);
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.85rem;
+}
+
+.api pre {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.85rem;
+    color: var(--color-text);
+    margin: 0;
 }
 
 /* Source */
