@@ -5,14 +5,235 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qiyaam — UK Prayer Times</title>
     <meta name="description" content="Shia prayer times for 35 UK cities, according to the Imam Ali Foundation.">
-    <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0a1a10;
+            color: #f0ede6;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        main {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .ornament {
+            color: #c9a227;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+        h1 {
+            margin: 0.5rem 0 0.25rem;
+            font-family: 'Amiri', Georgia, serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #c9a227;
+            letter-spacing: 0.02em;
+        }
+        .tagline {
+            margin: 0;
+            color: #8a9a8d;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .divider span {
+            display: block;
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c9a227, transparent);
+        }
+        .star { color: #c9a227; opacity: 0.6; }
+        
+        /* City Select */
+        .city-select {
+            margin-bottom: 1.5rem;
+        }
+        select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #0f241a;
+            color: #f0ede6;
+            border: 1px solid rgba(201,162,39,0.25);
+            border-radius: 6px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23c9a227' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+        select:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+        
+        /* Times */
+        .times {
+            background: #0f241a;
+            border: 1px solid rgba(201,162,39,0.25);
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.875rem 1.25rem;
+            border-bottom: 1px solid rgba(201,162,39,0.15);
+        }
+        .time-row:last-child {
+            border-bottom: none;
+        }
+        .time-row .label {
+            color: #8a9a8d;
+            font-size: 0.9rem;
+        }
+        .time-row .value {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #c9a227;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Actions */
+        .actions {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 1.25rem 0.625rem 1rem;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid #3a3a3a;
+        }
+        .badge:hover {
+            border-color: #555;
+        }
+        .badge svg {
+            flex-shrink: 0;
+            opacity: 0.9;
+        }
+        .badge-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.15;
+        }
+        .badge-small {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            opacity: 0.7;
+        }
+        .badge-large {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .hint {
+            margin: 0.875rem 0 1.25rem;
+            font-size: 0.7rem;
+            color: #8a9a8d;
+            opacity: 0.6;
+        }
+        .calendar-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .calendar-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: #8a9a8d;
+            text-decoration: none;
+        }
+        .calendar-links a:hover { color: #c9a227; }
+        .calendar-links .sep { color: #8a9a8d; opacity: 0.3; }
+        
+        /* API */
+        .api {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(201,162,39,0.15);
+            margin-bottom: 1.5rem;
+        }
+        .api h2 {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #c9a227;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin: 0 0 0.75rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+        .endpoints {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+        .endpoints code {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            background: #0f241a;
+            border: 1px solid rgba(201,162,39,0.15);
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 0.75rem;
+            color: #8a9a8d;
+        }
+        .endpoints code em {
+            font-style: normal;
+            color: #c9a227;
+            opacity: 0.6;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+        }
+        footer p {
+            margin: 0;
+            font-size: 0.7rem;
+            color: #8a9a8d;
+            opacity: 0.5;
+        }
+        footer a {
+            color: #c9a227;
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <div class="pattern-bg"></div>
-    
     <main>
         <header>
             <div class="ornament">✦</div>
@@ -20,7 +241,7 @@
             <p class="tagline">UK Prayer Times</p>
             <div class="divider">
                 <span></span>
-                <svg class="star" viewBox="0 0 24 24" width="16" height="16">
+                <svg class="star" viewBox="0 0 24 24" width="14" height="14">
                     <polygon points="12,2 15,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 9,9" fill="currentColor"/>
                 </svg>
                 <span></span>
@@ -100,8 +321,8 @@
 
         <section class="actions">
             <a href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd" class="badge" target="_blank">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M16.5 3C14.76 3 13.09 3.81 12 5.08C10.91 3.81 9.24 3 7.5 3C4.42 3 2 5.41 2 8.5c0 3.77 3.4 6.86 8.55 11.53L12 21.35l1.45-1.32C18.6 15.36 22 12.27 22 8.5 22 5.41 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
                 </svg>
                 <div class="badge-text">
                     <span class="badge-small">Add to</span>
@@ -112,14 +333,14 @@
             
             <div class="calendar-links">
                 <a id="apple-cal" href="#">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                         <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
                     </svg>
                     Apple Calendar
                 </a>
                 <span class="sep">·</span>
                 <a id="google-cal" href="#">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                         <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
                     </svg>
                     Google Calendar
