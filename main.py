@@ -1,3 +1,4 @@
+import calendar
 import datetime as dt
 import json
 from pathlib import Path
@@ -84,6 +85,10 @@ def adjust_for_DST(utc_time, use_24_hour: bool, year=None, month=None, day=None)
     if isinstance(utc_time, str):
         if year is None:
             year = dt.datetime.now().year
+
+        # Feb 29 only exists in leap years — fall back to reference leap year
+        if month == 2 and day == 29:
+            year = DST_REFERENCE_YEAR
 
         assert month is not None and day is not None
         dt_object = dt.datetime.strptime(utc_time, "%H:%M").replace(
@@ -172,14 +177,16 @@ def generate_ics(location: str, days: int = CALENDAR_DAYS) -> str:
 
         # Skip Feb 29 if data doesn't have it
         if month == 2 and day == 29:
-            try:
-                _ = prayer_times[location][1][28]  # Check if Feb 29 exists
-            except IndexError:
+            if not calendar.isleap(year):
                 continue
 
         for start_prayer, end_prayer, summary in CALENDAR_EVENTS:
             start_dt = get_prayer_datetime(location, year, month, day, start_prayer)
             end_dt = get_prayer_datetime(location, year, month, day, end_prayer)
+
+            # Midnight can wrap past midnight after DST conversion — push end to next day
+            if end_dt <= start_dt:
+                end_dt += dt.timedelta(days=1)
 
             start_str = start_dt.strftime("%Y%m%dT%H%M%S")
             end_str = end_dt.strftime("%Y%m%dT%H%M%S")
