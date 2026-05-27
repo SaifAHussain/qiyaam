@@ -11,6 +11,8 @@
             --text-muted: #7d8a7a;
             --bg: #0c1a12;
             --card: #121f17;
+            --row: #121f17;
+            --row-alt: #1a2a20;
             --gold: #b8973a;
             --border: rgba(184, 151, 58, 0.12);
         }
@@ -40,9 +42,12 @@
         h1 {
             font-size: 2rem;
             font-weight: 600;
-            color: var(--gold);
             letter-spacing: -0.02em;
             margin-bottom: 0.25rem;
+            background: linear-gradient(180deg, #f0e2b8 0%, #d4b45c 42%, #9a7830 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
         .subtitle {
@@ -78,10 +83,11 @@
         }
         
         .times {
-            background: var(--card);
+            background: var(--row);
             border: 1px solid var(--border);
             border-radius: 8px;
             margin-bottom: 2rem;
+            overflow: hidden;
         }
         
         .time-row {
@@ -90,18 +96,24 @@
             padding: 0.75rem 1rem;
         }
         
-        .time-row:not(:last-child) {
-            border-bottom: 1px solid var(--border);
+        .time-row:nth-child(odd) {
+            background: var(--row);
+        }
+        
+        .time-row:nth-child(even) {
+            background: var(--row-alt);
         }
         
         .time-row .label {
-            color: var(--text-muted);
-            font-size: 0.875rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            opacity: 0.88;
         }
         
         .time-row .value {
-            color: var(--gold);
-            font-weight: 500;
+            color: #e8d5a0;
+            font-size: 0.95rem;
+            font-weight: 600;
             font-variant-numeric: tabular-nums;
         }
         
