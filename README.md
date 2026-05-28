@@ -27,4 +27,4 @@ Aberystwyth, Bangor (Wales), Birmingham, Bournemouth, Brighton, Bristol, Cambrid
 
 Subscribe to prayer times:
 - Apple: `webcal://qiyaam.com/{city}/calendar.ics?days=365`
-- Google: Add by URL → `https://qiyaam.com/{city}/calendar.ics?days=365`
+- Google: use the site button, or add by URL → `https://www.qiyaam.com/{city}/calendar.ics?days=365`

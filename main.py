@@ -166,6 +166,9 @@ def generate_ics(location: str, days: int = CALENDAR_DAYS) -> str:
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
         "PRODID:-//Qiyaam//Prayer Times//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "X-WR-TIMEZONE:Europe/London",
         f"X-WR-CALNAME:Prayer Times - {location.title()}",
     ]
 
@@ -188,8 +191,8 @@ def generate_ics(location: str, days: int = CALENDAR_DAYS) -> str:
             if end_dt <= start_dt:
                 end_dt += dt.timedelta(days=1)
 
-            start_str = start_dt.strftime("%Y%m%dT%H%M%S")
-            end_str = end_dt.strftime("%Y%m%dT%H%M%S")
+            start_str = start_dt.astimezone(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
+            end_str = end_dt.astimezone(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
             uid = f"{start_prayer}-{current.strftime('%Y-%m-%d')}@qiyaam.com"
 
             lines.extend(
@@ -197,8 +200,8 @@ def generate_ics(location: str, days: int = CALENDAR_DAYS) -> str:
                     "BEGIN:VEVENT",
                     f"UID:{uid}",
                     f"DTSTAMP:{dtstamp}",
-                    f"DTSTART;TZID=Europe/London:{start_str}",
-                    f"DTEND;TZID=Europe/London:{end_str}",
+                    f"DTSTART:{start_str}",
+                    f"DTEND:{end_str}",
                     f"SUMMARY:{summary}",
                     "END:VEVENT",
                 ]
