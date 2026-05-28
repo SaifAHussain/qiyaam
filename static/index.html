@@ -1,378 +1,530 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qiyaam</title>
-    <meta name="description" content="Shia prayer times for 35 UK cities.">
-    <style>
-        :root {
-            --text: #e8e4dc;
-            --text-muted: #7d8a7a;
-            --bg: #0c1a12;
-            --card: #121f17;
-            --row: #121f17;
-            --row-alt: #1a2a20;
-            --gold: #b8973a;
-            --border: rgba(184, 151, 58, 0.12);
-        }
-        
-        * { box-sizing: border-box; margin: 0; }
-        
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        main {
-            max-width: 380px;
-            margin: 0 auto;
-            padding: 4rem 1.25rem 3rem;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.25rem;
-            background: linear-gradient(180deg, #f0e2b8 0%, #d4b45c 42%, #9a7830 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .subtitle {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-        
-        .select-wrap {
-            margin-bottom: 1rem;
-        }
-        
-        select {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            font-size: 0.95rem;
-            font-family: inherit;
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%237d8a7a' viewBox='0 0 16 16'%3E%3Cpath d='M8 12L2 6h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-        
-        .times {
-            background: var(--row);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        
-        .time-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-        }
-        
-        .time-row:nth-child(odd) {
-            background: var(--row);
-        }
-        
-        .time-row:nth-child(even) {
-            background: var(--row-alt);
-        }
-        
-        .time-row .label {
-            color: var(--text);
-            font-size: 0.95rem;
-            opacity: 0.88;
-        }
-        
-        .time-row .value {
-            color: #e8d5a0;
-            font-size: 0.95rem;
-            font-weight: 600;
-            font-variant-numeric: tabular-nums;
-        }
-        
-        .actions {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        
-        .badges {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #000;
-            color: #fff;
-            padding: 8px 16px 8px 10px;
-            border-radius: 8px;
-            text-decoration: none;
-            border: 1px solid #333;
-            font-size: 0.85rem;
-            min-width: 180px;
-        }
-        
-        .badge:hover {
-            border-color: #555;
-        }
-        
-        .badge-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .badge-icon svg {
-            width: 18px;
-            height: 18px;
-        }
-        
-        .badge-icon.shortcuts {
-            background: linear-gradient(135deg, #f55b6a, #fc3d57);
-        }
-        
-        .badge-icon.apple-cal {
-            background: #fff;
-        }
-        
-        .badge-icon.google-cal {
-            background: #fff;
-        }
-        
-        .badge-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            line-height: 1.15;
-        }
-        
-        .badge-text .small {
-            font-size: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-            opacity: 0.6;
-        }
-        
-        .badge-text .large {
-            font-weight: 600;
-        }
-        
-        .note {
-            margin-top: 0.75rem;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        
-        .api {
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .api-label {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            text-align: center;
-            margin-bottom: 0.75rem;
-        }
-        
-        .endpoints {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .endpoints code {
-            display: block;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-family: ui-monospace, 'SF Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        
-        .endpoints em {
-            font-style: normal;
-            color: var(--gold);
-            opacity: 0.7;
-        }
-        
-        footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            opacity: 0.6;
-        }
-        
-        footer a {
-            color: inherit;
-        }
-    </style>
-</head>
-<body>
-    <main>
-        <header>
-            <h1>Qiyaam</h1>
-            <p class="subtitle">UK Prayer Times</p>
-        </header>
-
-        <div class="select-wrap">
-            <select id="city" aria-label="City">
-                <option value="aberystwyth">Aberystwyth</option>
-                <option value="bangor-wales">Bangor (Wales)</option>
-                <option value="birmingham">Birmingham</option>
-                <option value="bournemouth">Bournemouth</option>
-                <option value="brighton">Brighton</option>
-                <option value="bristol">Bristol</option>
-                <option value="cambridge">Cambridge</option>
-                <option value="cardiff">Cardiff</option>
-                <option value="dover">Dover</option>
-                <option value="dundee">Dundee</option>
-                <option value="edinburgh">Edinburgh</option>
-                <option value="exeter">Exeter</option>
-                <option value="glasgow">Glasgow</option>
-                <option value="hull">Hull</option>
-                <option value="leeds">Leeds</option>
-                <option value="leicester">Leicester</option>
-                <option value="liverpool">Liverpool</option>
-                <option value="london" selected>London</option>
-                <option value="luton">Luton</option>
-                <option value="manchester">Manchester</option>
-                <option value="middlesbrough">Middlesbrough</option>
-                <option value="milton-keynes">Milton Keynes</option>
-                <option value="newcastle">Newcastle</option>
-                <option value="norwich">Norwich</option>
-                <option value="nottingham">Nottingham</option>
-                <option value="oxford">Oxford</option>
-                <option value="peterborough">Peterborough</option>
-                <option value="plymouth">Plymouth</option>
-                <option value="portsmouth">Portsmouth</option>
-                <option value="sheffield">Sheffield</option>
-                <option value="southampton">Southampton</option>
-                <option value="southend-on-sea">Southend-on-Sea</option>
-                <option value="stoke-on-trent">Stoke-on-Trent</option>
-                <option value="swansea">Swansea</option>
-                <option value="swindon">Swindon</option>
-            </select>
-        </div>
-
-        <div class="times">
-            <div class="time-row"><span class="label">Imsaak</span><span class="value" id="imsaak">--:--</span></div>
-            <div class="time-row"><span class="label">Fajr</span><span class="value" id="dawn">--:--</span></div>
-            <div class="time-row"><span class="label">Sunrise</span><span class="value" id="sunrise">--:--</span></div>
-            <div class="time-row"><span class="label">Dhuhr</span><span class="value" id="noon">--:--</span></div>
-            <div class="time-row"><span class="label">Sunset</span><span class="value" id="sunset">--:--</span></div>
-            <div class="time-row"><span class="label">Maghrib</span><span class="value" id="maghrib">--:--</span></div>
-            <div class="time-row"><span class="label">Midnight</span><span class="value" id="midnight">--:--</span></div>
-        </div>
-
-        <div class="actions">
-            <div class="badges">
-                <a href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd" class="badge" target="_blank">
-                    <div class="badge-icon shortcuts">
-                        <svg viewBox="0 0 24 24" fill="white"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="8" y="8" width="8" height="8" rx="2" fill-opacity="0.8"/><rect x="13" y="13" width="8" height="8" rx="2" fill-opacity="0.6"/></svg>
-                    </div>
-                    <span class="badge-text">
-                        <span class="small">Add to</span>
-                        <span class="large">Shortcuts</span>
-                    </span>
-                </a>
-                <a id="apple-cal" href="#" class="badge">
-                    <div class="badge-icon apple-cal">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="#fff" stroke="#e53935" stroke-width="0"/><rect x="3" y="5" width="18" height="5" rx="2" fill="#e53935"/><text x="12" y="18" text-anchor="middle" font-size="9" font-weight="600" fill="#1a1a1a" font-family="system-ui">28</text></svg>
-                    </div>
-                    <span class="badge-text">
-                        <span class="small">Subscribe on</span>
-                        <span class="large">Apple Calendar</span>
-                    </span>
-                </a>
-                <a id="google-cal" href="#" class="badge">
-                    <div class="badge-icon google-cal">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="#fff"/><rect x="3" y="5" width="18" height="5" fill="#4285f4" rx="2"/><rect x="6" y="12" width="3" height="3" fill="#34a853"/><rect x="10.5" y="12" width="3" height="3" fill="#fbbc04"/><rect x="15" y="12" width="3" height="3" fill="#ea4335"/></svg>
-                    </div>
-                    <span class="badge-text">
-                        <span class="small">Subscribe on</span>
-                        <span class="large">Google Calendar</span>
-                    </span>
-                </a>
-            </div>
-            <p class="note">Shortcut is London only · Edit for other cities</p>
-        </div>
-
-        <div class="api">
-            <p class="api-label">API</p>
-            <div class="endpoints">
-                <code>/<span class="slug">london</span>/today</code>
-                <code>/<span class="slug">london</span>/<em>month</em>/<em>day</em></code>
-                <code>/<span class="slug">london</span>/calendar.ics</code>
-            </div>
-        </div>
-
-        <footer>
-            Data from <a href="https://najaf.org/english/" target="_blank">Imam Ali Foundation</a>
-        </footer>
-    </main>
-
-    <script>
-        const city = document.getElementById('city');
-        const prayers = ['imsaak','dawn','sunrise','noon','sunset','maghrib','midnight'];
-
-        async function load() {
-            const s = city.value;
-            try {
-                const r = await fetch(`/${s}/today`);
-                const d = await r.json();
-                prayers.forEach(p => document.getElementById(p).textContent = d[p] || '--:--');
-            } catch(e) {
-                prayers.forEach(p => document.getElementById(p).textContent = '--:--');
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Qiyaam</title>
+        <meta
+            name="description"
+            content="Shia prayer times for 35 UK cities."
+        />
+        <style>
+            :root {
+                --text: #e8e4dc;
+                --text-muted: #7d8a7a;
+                --bg: #0c1a12;
+                --card: #121f17;
+                --row: #121f17;
+                --row-alt: #1a2a20;
+                --gold: #b8973a;
+                --border: rgba(184, 151, 58, 0.12);
             }
-            document.getElementById('google-cal').href =
-                `https://www.google.com/calendar/render?cid=webcal://${location.host}/${s}/calendar.ics?days=365`;
-            document.getElementById('apple-cal').href = `webcal://${location.host}/${s}/calendar.ics?days=365`;
-            document.querySelectorAll('.slug').forEach(el => el.textContent = s);
-        }
 
-        city.addEventListener('change', load);
-        load();
-    </script>
-</body>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+
+            body {
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                line-height: 1.5;
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            main {
+                max-width: 380px;
+                margin: 0 auto;
+                padding: 4rem 1.25rem 3rem;
+            }
+
+            header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                margin-bottom: 0.25rem;
+                background: linear-gradient(
+                    180deg,
+                    #f0e2b8 0%,
+                    #d4b45c 42%,
+                    #9a7830 100%
+                );
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .select-wrap {
+                margin-bottom: 1rem;
+            }
+
+            select {
+                width: 100%;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+                font-family: inherit;
+                background: var(--card);
+                color: var(--text);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                cursor: pointer;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%237d8a7a' viewBox='0 0 16 16'%3E%3Cpath d='M8 12L2 6h12z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 1rem center;
+            }
+
+            select:focus {
+                outline: none;
+                border-color: var(--gold);
+            }
+
+            .times {
+                background: var(--row);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                margin-bottom: 2rem;
+                overflow: hidden;
+            }
+
+            .time-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.75rem 1rem;
+            }
+
+            .time-row:nth-child(odd) {
+                background: var(--row);
+            }
+
+            .time-row:nth-child(even) {
+                background: var(--row-alt);
+            }
+
+            .time-row .label {
+                color: var(--text);
+                font-size: 0.95rem;
+                opacity: 0.88;
+            }
+
+            .time-row .value {
+                color: #e8d5a0;
+                font-size: 0.95rem;
+                font-weight: 600;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .actions {
+                text-align: center;
+                margin-bottom: 2.5rem;
+            }
+
+            .badges {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: #000;
+                color: #fff;
+                padding: 8px 16px 8px 10px;
+                border-radius: 8px;
+                text-decoration: none;
+                border: 1px solid #333;
+                font-size: 0.85rem;
+                min-width: 180px;
+            }
+
+            .badge:hover {
+                border-color: #555;
+            }
+
+            .badge-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .badge-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .badge-icon.shortcuts {
+                background: linear-gradient(135deg, #f55b6a, #fc3d57);
+            }
+
+            .badge-icon.apple-cal {
+                background: #fff;
+            }
+
+            .badge-icon.google-cal {
+                background: #fff;
+            }
+
+            .badge-text {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                line-height: 1.15;
+            }
+
+            .badge-text .small {
+                font-size: 0.5rem;
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+                opacity: 0.6;
+            }
+
+            .badge-text .large {
+                font-weight: 600;
+            }
+
+            .note {
+                margin-top: 0.75rem;
+                font-size: 0.7rem;
+                color: var(--text-muted);
+            }
+
+            .api {
+                border-top: 1px solid var(--border);
+                padding-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .api-label {
+                font-size: 0.65rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                text-align: center;
+                margin-bottom: 0.75rem;
+            }
+
+            .endpoints {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .endpoints code {
+                display: block;
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 8px 12px;
+                font-family: ui-monospace, "SF Mono", monospace;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+            }
+
+            .endpoints em {
+                font-style: normal;
+                color: var(--gold);
+                opacity: 0.7;
+            }
+
+            footer {
+                text-align: center;
+                font-size: 0.7rem;
+                color: var(--text-muted);
+                opacity: 0.6;
+            }
+
+            footer a {
+                color: inherit;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Qiyaam</h1>
+                <p class="subtitle">UK Prayer Times</p>
+            </header>
+
+            <div class="select-wrap">
+                <select id="city" aria-label="City">
+                    <option value="aberystwyth">Aberystwyth</option>
+                    <option value="bangor-wales">Bangor (Wales)</option>
+                    <option value="birmingham">Birmingham</option>
+                    <option value="bournemouth">Bournemouth</option>
+                    <option value="brighton">Brighton</option>
+                    <option value="bristol">Bristol</option>
+                    <option value="cambridge">Cambridge</option>
+                    <option value="cardiff">Cardiff</option>
+                    <option value="dover">Dover</option>
+                    <option value="dundee">Dundee</option>
+                    <option value="edinburgh">Edinburgh</option>
+                    <option value="exeter">Exeter</option>
+                    <option value="glasgow">Glasgow</option>
+                    <option value="hull">Hull</option>
+                    <option value="leeds">Leeds</option>
+                    <option value="leicester">Leicester</option>
+                    <option value="liverpool">Liverpool</option>
+                    <option value="london" selected>London</option>
+                    <option value="luton">Luton</option>
+                    <option value="manchester">Manchester</option>
+                    <option value="middlesbrough">Middlesbrough</option>
+                    <option value="milton-keynes">Milton Keynes</option>
+                    <option value="newcastle">Newcastle</option>
+                    <option value="norwich">Norwich</option>
+                    <option value="nottingham">Nottingham</option>
+                    <option value="oxford">Oxford</option>
+                    <option value="peterborough">Peterborough</option>
+                    <option value="plymouth">Plymouth</option>
+                    <option value="portsmouth">Portsmouth</option>
+                    <option value="sheffield">Sheffield</option>
+                    <option value="southampton">Southampton</option>
+                    <option value="southend-on-sea">Southend-on-Sea</option>
+                    <option value="stoke-on-trent">Stoke-on-Trent</option>
+                    <option value="swansea">Swansea</option>
+                    <option value="swindon">Swindon</option>
+                </select>
+            </div>
+
+            <div class="times">
+                <div class="time-row">
+                    <span class="label">Imsaak</span
+                    ><span class="value" id="imsaak">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Fajr</span
+                    ><span class="value" id="dawn">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Sunrise</span
+                    ><span class="value" id="sunrise">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Dhuhr</span
+                    ><span class="value" id="noon">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Sunset</span
+                    ><span class="value" id="sunset">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Maghrib</span
+                    ><span class="value" id="maghrib">--:--</span>
+                </div>
+                <div class="time-row">
+                    <span class="label">Midnight</span
+                    ><span class="value" id="midnight">--:--</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <div class="badges">
+                    <a
+                        href="https://www.icloud.com/shortcuts/568c3e7df9e6495083735671fc4229cd"
+                        class="badge"
+                        target="_blank"
+                    >
+                        <div class="badge-icon shortcuts">
+                            <svg viewBox="0 0 24 24" fill="white">
+                                <rect x="3" y="3" width="8" height="8" rx="2" />
+                                <rect
+                                    x="8"
+                                    y="8"
+                                    width="8"
+                                    height="8"
+                                    rx="2"
+                                    fill-opacity="0.8"
+                                />
+                                <rect
+                                    x="13"
+                                    y="13"
+                                    width="8"
+                                    height="8"
+                                    rx="2"
+                                    fill-opacity="0.6"
+                                />
+                            </svg>
+                        </div>
+                        <span class="badge-text">
+                            <span class="small">Add to</span>
+                            <span class="large">Shortcuts</span>
+                        </span>
+                    </a>
+                    <a id="apple-cal" href="#" class="badge">
+                        <div class="badge-icon apple-cal">
+                            <svg viewBox="0 0 24 24">
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="16"
+                                    rx="2"
+                                    fill="#fff"
+                                    stroke="#e53935"
+                                    stroke-width="0"
+                                />
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="5"
+                                    rx="2"
+                                    fill="#e53935"
+                                />
+                                <text
+                                    x="12"
+                                    y="18"
+                                    text-anchor="middle"
+                                    font-size="9"
+                                    font-weight="600"
+                                    fill="#1a1a1a"
+                                    font-family="system-ui"
+                                >
+                                    28
+                                </text>
+                            </svg>
+                        </div>
+                        <span class="badge-text">
+                            <span class="small">Subscribe on</span>
+                            <span class="large">Apple Calendar</span>
+                        </span>
+                    </a>
+                    <a id="google-cal" href="#" class="badge">
+                        <div class="badge-icon google-cal">
+                            <svg viewBox="0 0 24 24">
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="16"
+                                    rx="2"
+                                    fill="#fff"
+                                />
+                                <rect
+                                    x="3"
+                                    y="5"
+                                    width="18"
+                                    height="5"
+                                    fill="#4285f4"
+                                    rx="2"
+                                />
+                                <rect
+                                    x="6"
+                                    y="12"
+                                    width="3"
+                                    height="3"
+                                    fill="#34a853"
+                                />
+                                <rect
+                                    x="10.5"
+                                    y="12"
+                                    width="3"
+                                    height="3"
+                                    fill="#fbbc04"
+                                />
+                                <rect
+                                    x="15"
+                                    y="12"
+                                    width="3"
+                                    height="3"
+                                    fill="#ea4335"
+                                />
+                            </svg>
+                        </div>
+                        <span class="badge-text">
+                            <span class="small">Subscribe on</span>
+                            <span class="large">Google Calendar</span>
+                        </span>
+                    </a>
+                </div>
+                <p class="note">
+                    Shortcut is London only · Edit for other cities
+                </p>
+            </div>
+
+            <div class="api">
+                <p class="api-label">API</p>
+                <div class="endpoints">
+                    <code>/<span class="slug">london</span>/today</code>
+                    <code
+                        >/<span class="slug">london</span>/<em>month</em>/<em
+                            >day</em
+                        ></code
+                    >
+                    <code>/<span class="slug">london</span>/calendar.ics</code>
+                </div>
+            </div>
+
+            <footer>
+                Data from
+                <a href="https://najaf.org/english/" target="_blank"
+                    >Imam Ali Foundation</a
+                >
+            </footer>
+        </main>
+
+        <script>
+            const city = document.getElementById("city");
+            const prayers = [
+                "imsaak",
+                "dawn",
+                "sunrise",
+                "noon",
+                "sunset",
+                "maghrib",
+                "midnight",
+            ];
+
+            async function load() {
+                const s = city.value;
+                try {
+                    const r = await fetch(`/${s}/today`);
+                    const d = await r.json();
+                    prayers.forEach(
+                        (p) =>
+                            (document.getElementById(p).textContent =
+                                d[p] || "--:--"),
+                    );
+                } catch (e) {
+                    prayers.forEach(
+                        (p) =>
+                            (document.getElementById(p).textContent = "--:--"),
+                    );
+                }
+                document.getElementById("google-cal").href =
+                    `https://www.google.com/calendar/render?cid=webcal://${location.host}/${s}/calendar.ics?days=30`;
+                document.getElementById("apple-cal").href =
+                    `webcal://${location.host}/${s}/calendar.ics?days=365`;
+                document
+                    .querySelectorAll(".slug")
+                    .forEach((el) => (el.textContent = s));
+            }
+
+            city.addEventListener("change", load);
+            load();
+        </script>
+    </body>
 </html>
