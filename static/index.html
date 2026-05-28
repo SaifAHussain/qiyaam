@@ -365,9 +365,8 @@
             } catch(e) {
                 prayers.forEach(p => document.getElementById(p).textContent = '--:--');
             }
-            const feedUrl = `https://${location.host}/${s}/calendar.ics?days=365`;
             document.getElementById('google-cal').href =
-                `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feedUrl)}`;
+                `https://www.google.com/calendar/render?cid=webcal://${location.host}/${s}/calendar.ics?days=365`;
             document.getElementById('apple-cal').href = `webcal://${location.host}/${s}/calendar.ics?days=365`;
             document.querySelectorAll('.slug').forEach(el => el.textContent = s);
         }

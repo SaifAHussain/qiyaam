@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, conint
@@ -285,15 +285,27 @@ def get_time_yesterday(location: str, time: str, use_24_hour: bool = True):
 
 
 # Calendar feed (must be before /{location}/{month} to avoid routing conflict)
-@app.get("/{location}/calendar.ics")
-def get_calendar(location: str, days: int = CALENDAR_DAYS):
+@app.api_route("/{location}/calendar.ics", methods=["GET", "HEAD"])
+def get_calendar(location: str, request: Request, days: int = CALENDAR_DAYS):
     location = validate_location(location)
     if days < 1:
         raise HTTPException(status_code=400, detail="Days must be at least 1")
     if days > 365:
         raise HTTPException(status_code=400, detail="Days cannot exceed 365")
     ics_content = generate_ics(location, days)
-    return Response(content=ics_content, media_type="text/calendar")
+    headers = {"Cache-Control": "public, max-age=300"}
+    if request.method == "HEAD":
+        body = ics_content.encode("utf-8")
+        return Response(
+            content=b"",
+            media_type="text/calendar; charset=utf-8",
+            headers={**headers, "Content-Length": str(len(body))},
+        )
+    return Response(
+        content=ics_content,
+        media_type="text/calendar; charset=utf-8",
+        headers=headers,
+    )
 
 
 # Whole Year
